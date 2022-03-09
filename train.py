@@ -115,27 +115,27 @@ if config['misc']['start_tensor_board']:
     print(colored('tensorboard board launched at http://127.0.0.1:' + str(port), color='yellow', attrs=['underline', 'bold', 'blink', 'reverse']))
 train_writer = tensorboardX.SummaryWriter(log_directory, purge_step=iterations)
 
-if config['misc']['do_telegram_report']:           
+if config['misc']['do_telegram_report']:
     try:
         import telegram
         from telegram.ext import Updater, MessageHandler, Filters
     except:
         print(colored('Failed to load Telegram Try: \n1) conda install -c conda-forge python-telegram-bot. \n OR \n2) in \".yaml\" file change do_telegram_report to False \n in the meantime Continuing without ....', color='red', attrs=['underline', 'bold', 'blink', 'reverse']))
         config['misc']['do_telegram_report'] = False
-if config['misc']['do_telegram_report']:           
+if config['misc']['do_telegram_report']:
     in_ = ''
     confidential_yaml_file_path = './confidential_do_not_upload_to_github.yaml'
     if not os.path.exists(confidential_yaml_file_path):
-        
+
         in_ = input(colored('do_telegram_report is set to True If you would like to set up telegram press Enter. If you just Want to continue write \"NO\": \n'))
-        if in_.upper() != 'NO':    
+        if in_.upper() != 'NO':
             with open(confidential_yaml_file_path, 'w') as confidential_yaml_file:
                 confidential_yaml_file.write('bot_token: xxxx\n')
                 confidential_yaml_file.write('chat_id: xxxx')
             print(colored('Create a telegram bot. this is done by: \n1) downloding and signing into telegram.  \n2) starting a chat with \"BotFather\" \n3) send \"BotFather\" the text "/newbot", then follow the "BotFather" instraction to creat the bot \n4)when you are done you will recive a the new bot token. enter the token into the file: "' + confidential_yaml_file_path + ' which was create in the currnt directory', color='red', attrs=['underline', 'bold', 'blink', 'reverse']))
             print('==== You can turn telegram report OFF from the config.yaml file ====')
             input('when you are done press ENTER.')
-            
+
 
     if in_.upper() != 'NO':
         confidential_conf = get_config(confidential_yaml_file_path)

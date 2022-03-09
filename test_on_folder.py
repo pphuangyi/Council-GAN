@@ -32,7 +32,7 @@ parser.add_argument('--a2b', type=int, default=1, help="1 for a2b 0 for b2a")
 parser.add_argument('--seed', type=int, default=1, help="random seed")
 parser.add_argument('--num_style',type=int, default=10, help="number of styles to sample")
 parser.add_argument('--output_only', action='store_true', help="whether only save the output images or also save the input images")
-parser.add_argument('--num_of_images_to_test', type=int, default=10000, help="number of images to sample")
+parser.add_argument('--num_of_images_to_test', type=int, default=float('inf'), help="number of images to sample")
 
 data_name = 'out'
 
@@ -74,7 +74,7 @@ if 'gen_' in opts.checkpoint[-21:]:
            trainer.gen_a2b_s[0].load_state_dict(state_dict['a2b'])
        else:
            trainer.gen_b2a_s[0].load_state_dict(state_dict['b2a'])
-            
+
     council_size = 1
     only_one = True
 else:
@@ -100,7 +100,7 @@ else:
                 tmp_checkpoint = opts.checkpoint[:-8] + 'b2a_gen_' + str(i) + '_' + opts.checkpoint[-8:] + '.pt'
                 state_dict = torch.load(tmp_checkpoint, map_location=trainer.gen_b2a_s[i].cuda_device)
                 trainer.gen_b2a_s[i].load_state_dict(state_dict['b2a'])
-            
+
 
 
 trainer.cuda()
@@ -148,8 +148,13 @@ for i, (images, names) in tqdm(enumerate(zip(data_loader, image_names)), total=n
             path_all_in_one = os.path.join(output_folder, opts.checkpoint[-11:-3] + '_all_in_1', data_name + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
 
         else:
-            path = os.path.join(output_folder, opts.checkpoint[-8:] + "_%02d" % j, data_name + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
-            path_all_in_one = os.path.join(output_folder,  opts.checkpoint[-8:] + '_all_in_1', data_name + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
+            # path = os.path.join(output_folder, opts.checkpoint[-8:] + "_%02d" % j, data_name + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
+            # path_all_in_one = os.path.join(output_folder,  opts.checkpoint[-8:] + '_all_in_1', data_name + '_out_' + str(curr_image_num) + '_' + str(j) + '.jpg')
+            style = "%02d" % j
+            tokens = basename.split('.')
+            stem, ext = tokens[0], '.'.join(tokens[1:])
+            path = os.path.join(output_folder, opts.checkpoint[-8:] + '_' + style, basename)
+            path_all_in_one = os.path.join(output_folder,  opts.checkpoint[-8:] + '_all_in_1', f'{stem}_{style}.{ext}')
 
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
